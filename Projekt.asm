@@ -55,7 +55,7 @@ mov A, R4
 call convert
 clr P2.3
 setb P2.3
-call refresh
+jmp refresh
 
 convert:
         cjne A,#01h, keine1c
