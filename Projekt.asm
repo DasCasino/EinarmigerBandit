@@ -104,7 +104,31 @@ neu:	 add A,#020h        ;die Zufallszahl plus 32
 	
 	 mov A, R2          ;schreib Zahl in A
 
-	call convert
+        cjne A,#01h, keine1
+        mov P3, #11111001b
+        ret
+keine1:
+        cjne A,#02h, keine2
+        mov P3, #10100100b
+        ret
+keine2:  cjne A,#03h, keine3
+        mov P3, #10110000b
+        ret
+keine3: cjne A,#04h, keine4
+        mov P3, #10011001b
+        ret
+keine4: cjne A,#05h, keine5
+        mov P3, #10010010b
+        ret
+keine5:
+        cjne A,#06h, keine6
+        mov P3, #10000010b
+        ret
+keine6: cjne A,#07h, keine7
+        mov P3, #11111000b
+        ret
+keine7: mov P3, #10000000b
+        ret ;von vorn!
 ;--------------------------------------------------
 
 ; ------ Zufallszahlengenerator-----------------
