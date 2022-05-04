@@ -1,4 +1,3 @@
-
 CSEG At 0H
 TOP: 
 MOV R0,#0F0h
@@ -13,11 +12,9 @@ setb P2.0
 setb P2.1
 setb P2.2
 setb P2.3
-push p1
 push p2
 call init
 pop p2
-pop p1
 DJNZ R0,LOOP; reduziere R0 und springe nach oben (LOOP) falls nicht Null
 
 displayNum:
@@ -57,6 +54,11 @@ clr P2.3
 setb P2.3
 jmp refresh
 
+;TODO make this conversion better/not scuffed... (db table, bcd...)
+;TODO vergleich einfügen, gewinn anzeigen
+;TODO animation mehrerer Zahlen, dann auf zahl festlegen
+;TODO wertebereich verändern, damit gewinn wahrscheinlicher wird
+;Bei sehr viel Langeweile: Punktesystem einfügen
 convert:
         cjne A,#01h, keine1c
         mov P3, #11111001b
@@ -87,7 +89,6 @@ keine7c: mov P3, #10000000b
 ;;Ab hier kommt der zufallsgenerator
 
 EQU	ZUF8R, 0x20		;ein byte
-jmp init
 ORG 100H
 
 ;-----------MAIN-----------------------------------
@@ -104,31 +105,9 @@ neu:	 add A,#020h        ;die Zufallszahl plus 32
 	
 	 mov A, R2          ;schreib Zahl in A
 
-        cjne A,#01h, keine1
-        mov P3, #11111001b
-        ret
-keine1:
-        cjne A,#02h, keine2
-        mov P3, #10100100b
-        ret
-keine2:  cjne A,#03h, keine3
-        mov P3, #10110000b
-        ret
-keine3: cjne A,#04h, keine4
-        mov P3, #10011001b
-        ret
-keine4: cjne A,#05h, keine5
-        mov P3, #10010010b
-        ret
-keine5:
-        cjne A,#06h, keine6
-        mov P3, #10000010b
-        ret
-keine6: cjne A,#07h, keine7
-        mov P3, #11111000b
-        ret
-keine7: mov P3, #10000000b
-        ret ;von vorn!
+call convert
+ret
+
 ;--------------------------------------------------
 
 ; ------ Zufallszahlengenerator-----------------
