@@ -20,7 +20,7 @@ jmp loop
 
 displayNum:
 call convert
-mov R4, P3
+mov R4, P3;save display code to register
 clr P2.0
 setb P2.0
 
@@ -63,30 +63,29 @@ jmp start
 
 
 
-;refreshes the display so numbers dont disappear
+;refreshes the display so numbers dont disappear, using display codes stored in register
 refresh:
 mov P3, R4
-
 clr P2.0
 setb P2.0
-mov P3, R5
 
+mov P3, R5
 clr P2.1
 setb P2.1
-mov P3, R6
 
+mov P3, R6
 clr P2.2
 setb P2.2
-mov P3, R7
 
+mov P3, R7
 clr P2.3
 setb P2.3
 ret
 
-;TODO gewinn anzeigen
-;TODO animation mehrerer Zahlen, dann auf zahl festlegen
+;TODO gewinn irgendwie schön anzeigen
+;TODO animation mehrerer Zahlen ("rollen"), dann auf zahl festlegen
 ;TODO wertebereich verändern, damit gewinn wahrscheinlicher wird
-;Bei sehr viel Langeweile: Punktesystem einfügen
+;Bei sehr viel Langeweile: Punktesystem einfügen :)
 convert:;write number to display to p3
 mov DPTR, #table
 push a ;save akku to stack
