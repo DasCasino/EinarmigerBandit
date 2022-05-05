@@ -60,32 +60,12 @@ jmp refresh
 ;TODO wertebereich verändern, damit gewinn wahrscheinlicher wird
 ;Bei sehr viel Langeweile: Punktesystem einfügen
 convert:
-        cjne A,#01h, keine1c
-        mov P3, #11111001b
+mov DPTR, #table
+push a ;save akku to stack
+movc a,@a+dptr
+mov p3,a
+pop a
         ret
-keine1c:
-        cjne A,#02h, keine2c
-        mov P3, #10100100b
-        ret
-keine2c:  cjne A,#03h, keine3c
-        mov P3, #10110000b
-        ret
-keine3c: cjne A,#04h, keine4c
-        mov P3, #10011001b
-        ret
-keine4c: cjne A,#05h, keine5c
-        mov P3, #10010010b
-        ret
-keine5c:
-        cjne A,#06h, keine6c
-        mov P3, #10000010b
-        ret
-keine6c: cjne A,#07h, keine7c
-        mov P3, #11111000b
-        ret
-keine7c: mov P3, #10000000b
-        ret ;von vorn!
-
 ;;Ab hier kommt der zufallsgenerator
 
 EQU	ZUF8R, 0x20		;ein byte
@@ -105,7 +85,7 @@ neu:	 add A,#020h        ;die Zufallszahl plus 32
 	
 	 mov A, R2          ;schreib Zahl in A
 
-call convert
+call convert ;only call if needed
 ret
 
 ;--------------------------------------------------
@@ -121,5 +101,12 @@ ZUB:	anl	a, #10111000b
 	rlc	A
 	mov	ZUF8R, A
 	ret
+	
+org 300h
+table:
+db 11000000b
+db 11111001b, 10100100b, 10110000b
+db 10011001b, 10010010b, 10000010b
+db 11111000b, 10000000b, 10010000b
 
 end
