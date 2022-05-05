@@ -19,63 +19,75 @@ pop p2
 jmp loop
 
 displayNum:
-mov R4, A
+call convert
+mov R4, P3
 clr P2.0
 setb P2.0
+
 call ANF
-mov R5, A
+call convert
+mov R5,P3
 clr P2.1
 setb P2.1
+
 call ANF
-mov R6, A
+call convert
+mov R6,P3
 clr P2.2
 setb P2.2
+
 call ANF
-mov R7, A
+call convert
+mov R7,P3
 clr P2.3
 setb P2.3
 ;compare
 mov A,R7
-anl A,R6
-anl A,R5
-anl A,R4
-jnz win
-nowin:
+mov B,R6
+cjne A,B,nowin
+mov A,R5
+cjne A,B,nowin
+mov A,R4
+cjne A,B,nowin
+
+win: ;display numbers
+call refresh
+jmp win
+
+nowin: ;display numbers for short time, then show lines like at start
 mov R0,#0fh
 loop1:
 call refresh
 djnz R0,loop1
 jmp start
-win:
-call refresh
-jmp win
+
 
 
 ;refreshes the display so numbers dont disappear
 refresh:
-mov A, R4
-call convert
+mov P3, R4
+
 clr P2.0
 setb P2.0
-mov A, R5
-call convert
+mov P3, R5
+
 clr P2.1
 setb P2.1
-mov A, R6
-call convert
+mov P3, R6
+
 clr P2.2
 setb P2.2
-mov A, R7
-call convert
+mov P3, R7
+
 clr P2.3
 setb P2.3
 ret
 
-;TODO vergleich einfügen, gewinn anzeigen
+;TODO gewinn anzeigen
 ;TODO animation mehrerer Zahlen, dann auf zahl festlegen
 ;TODO wertebereich verändern, damit gewinn wahrscheinlicher wird
 ;Bei sehr viel Langeweile: Punktesystem einfügen
-convert:
+convert:;write number to display to p3
 mov DPTR, #table
 push a ;save akku to stack
 movc a,@a+dptr
@@ -101,7 +113,7 @@ neu:	 add A,#020h        ;die Zufallszahl plus 32
 	
 	 mov A, R2          ;schreib Zahl in A
 
-call convert ;only call if needed
+
 ret
 
 ;--------------------------------------------------
