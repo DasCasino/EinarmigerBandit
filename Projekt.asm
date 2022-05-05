@@ -1,6 +1,7 @@
 CSEG At 0H
 TOP: 
-MOV R0,#0F0h
+
+;main loop, detects is bit P0.0 is set
 LOOP: 
 jnb P0.0, displayNum
 mov P3, #10111111b ;display line on display
@@ -15,46 +16,45 @@ setb P2.3
 push p2
 call init
 pop p2
-DJNZ R0,LOOP; reduziere R0 und springe nach oben (LOOP) falls nicht Null
+jmp loop
 
 displayNum:
-mov R7, A
+mov R4, A
 clr P2.0
 setb P2.0
 call ANF
-mov R6, A
+mov R5, A
 clr P2.1
 setb P2.1
 call ANF
-mov R5, A
+mov R6, A
 clr P2.2
 setb P2.2
 call ANF
-mov R4, A
+mov R7, A
 clr P2.3
 setb P2.3
 
-
+;refreshes the display so numbers dont disappear
 refresh:
-mov A, R7
+mov A, R4
 call convert
 clr P2.0
 setb P2.0
-mov A, R6
+mov A, R5
 call convert
 clr P2.1
 setb P2.1
-mov A, R5
+mov A, R6
 call convert
 clr P2.2
 setb P2.2
-mov A, R4
+mov A, R7
 call convert
 clr P2.3
 setb P2.3
 jmp refresh
 
-;TODO make this conversion better/not scuffed... (db table, bcd...)
 ;TODO vergleich einfügen, gewinn anzeigen
 ;TODO animation mehrerer Zahlen, dann auf zahl festlegen
 ;TODO wertebereich verändern, damit gewinn wahrscheinlicher wird
@@ -65,7 +65,7 @@ push a ;save akku to stack
 movc a,@a+dptr
 mov p3,a
 pop a
-        ret
+ret
 ;;Ab hier kommt der zufallsgenerator
 
 EQU	ZUF8R, 0x20		;ein byte
