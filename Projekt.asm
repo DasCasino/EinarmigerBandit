@@ -1,7 +1,7 @@
 CSEG At 0H
-TOP: 
-
 ;main loop, detects is bit P0.0 is set
+Start:
+setb P0.0
 LOOP: 
 jnb P0.0, displayNum
 mov P3, #10111111b ;display line on display
@@ -34,6 +34,22 @@ call ANF
 mov R7, A
 clr P2.3
 setb P2.3
+;compare
+mov A,R7
+anl A,R6
+anl A,R5
+anl A,R4
+jnz win
+nowin:
+mov R0,#0fh
+loop1:
+call refresh
+djnz R0,loop1
+jmp start
+win:
+call refresh
+jmp win
+
 
 ;refreshes the display so numbers dont disappear
 refresh:
@@ -53,7 +69,7 @@ mov A, R7
 call convert
 clr P2.3
 setb P2.3
-jmp refresh
+ret
 
 ;TODO vergleich einfügen, gewinn anzeigen
 ;TODO animation mehrerer Zahlen, dann auf zahl festlegen
