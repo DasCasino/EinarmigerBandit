@@ -2,7 +2,7 @@ CSEG At 0H
 ;main loop, detects is bit P0.0 is set
 Start:
 setb P0.0
-LOOP: 
+MAINLOOP: 
 jnb P0.0, displayNum
 mov P3, #10111111b ;display line on display
 clr P2.0
@@ -14,33 +14,59 @@ setb P2.1
 setb P2.2
 setb P2.3
 push p2
+
 call init
 pop p2
-jmp loop
+jmp MAINLOOP
 
 displayNum:
+push A
+mov b, #02h
+div ab
+mov a,b
+inc a
 call convert
 mov R4, P3;save display code to register
 clr P2.0
 setb P2.0
 
+pop a
 call ANF
+push A
+mov b, #02h
+div ab
+mov a,b
+inc a
 call convert
 mov R5,P3
 clr P2.1
 setb P2.1
 
+pop a
 call ANF
+push A
+mov b, #02h
+div ab
+mov a,b
+inc a
 call convert
 mov R6,P3
 clr P2.2
 setb P2.2
 
+pop a
 call ANF
+push A
+mov b, #02h
+div ab
+mov a,b
+inc a
+
 call convert
 mov R7,P3
 clr P2.3
 setb P2.3
+
 ;compare
 mov A,R7
 mov B,R6
@@ -82,10 +108,15 @@ clr P2.3
 setb P2.3
 ret
 
+
+
+
+
 ;TODO gewinn irgendwie schön anzeigen
 ;TODO animation mehrerer Zahlen ("rollen"), dann auf zahl festlegen
 ;TODO wertebereich verändern, damit gewinn wahrscheinlicher wird
 ;Bei sehr viel Langeweile: Punktesystem einfügen :)
+;timer für displaysteuerung wie be Eieruhr
 convert:;write number to display to p3
 mov DPTR, #table
 push a ;save akku to stack
@@ -103,14 +134,15 @@ init:
          MOV	R0, #2fh   ;Speichere die Zahlenreihe oberhalb 30h
 ANF:
 ;-----------GENERIER EINE ZUFALLSZAHL----------
+	 
 	 call ZUFALL         ;Zufallszahl A bestimmen zwischen 00h und ffh
 ;----------- CASE-ANWEISUNG-------------------------
          mov R2,#00h        ;Zähler initialisieren mit 0 
 neu:	 add A,#020h        ;die Zufallszahl plus 32 
          inc R2            ;Zähler um 1 erhöhen
 	 jnc neu           ;falls schon Überlauf, dann weiter - sonst  addiere 32
-	
-	 mov A, R2          ;schreib Zahl in A
+;convert to 1,2,3
+	mov A, R2          ;schreib Zahl in A
 
 
 ret
