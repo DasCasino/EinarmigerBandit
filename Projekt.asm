@@ -20,6 +20,8 @@ pop p2
 jmp MAINLOOP
 
 displayNum:
+mov R3, #03h
+loop:
 push A
 mov b, #02h
 div ab
@@ -66,6 +68,10 @@ call convert
 mov R7,P3
 clr P2.3
 setb P2.3
+
+pop a
+call anf
+djnz R3, loop
 
 ;compare
 mov A,R7
