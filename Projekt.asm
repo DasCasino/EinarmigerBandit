@@ -23,7 +23,7 @@ displayNum:
 mov R3, #03h
 loop:
 push A
-mov b, #02h
+mov b, #04h
 div ab
 mov a,b
 inc a
@@ -114,13 +114,7 @@ clr P2.3
 setb P2.3
 ret
 
-
-
-
-
 ;TODO gewinn irgendwie schön anzeigen
-;TODO animation mehrerer Zahlen ("rollen"), dann auf zahl festlegen
-;TODO wertebereich verändern, damit gewinn wahrscheinlicher wird
 ;Bei sehr viel Langeweile: Punktesystem einfügen :)
 ;timer für displaysteuerung wie be Eieruhr
 convert:;write number to display to p3
@@ -147,7 +141,7 @@ ANF:
 neu:	 add A,#020h        ;die Zufallszahl plus 32 
          inc R2            ;Zähler um 1 erhöhen
 	 jnc neu           ;falls schon Überlauf, dann weiter - sonst  addiere 32
-;convert to 1,2,3
+	 
 	mov A, R2          ;schreib Zahl in A
 
 
