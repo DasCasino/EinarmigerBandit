@@ -1,7 +1,7 @@
 CSEG At 0H
-;main loop, detects is bit P0.0 is set
-
-mov R1, #09h
+;This project requires three virtual hardware components: a multiplexed led display, simple led display and simple keypad
+;main loop, detects is bit P0.0 is set (can be controlled via simple keypad)
+mov R1, #08h ;starting points
 Start:
 setb P0.0
 call convertpoints
@@ -22,7 +22,7 @@ call init
 pop p2
 jmp MAINLOOP
 
-displayNum:
+displayNum: ;generate random numbers, save number codes to register
 mov R3, #03h
 loop:
 push A
@@ -43,7 +43,7 @@ div ab
 mov a,b
 inc a
 call convert
-mov R5,P3
+mov R5,P3;save display code to register
 clr P2.1
 setb P2.1
 
@@ -55,7 +55,7 @@ div ab
 mov a,b
 inc a
 call convert
-mov R6,P3
+mov R6,P3;save display code to register
 clr P2.2
 setb P2.2
 
@@ -68,7 +68,7 @@ mov a,b
 inc a
 
 call convert
-mov R7,P3
+mov R7,P3;save display code to register
 clr P2.3
 setb P2.3
 
@@ -76,7 +76,7 @@ pop a
 call anf
 djnz R3, loop
 
-;compare
+;compare numbers to check if they are the same
 mov A,R7
 mov B,R6
 cjne A,B,nowin
@@ -85,18 +85,20 @@ cjne A,B,nowin
 mov A,R4
 cjne A,B,nowin
 
-win: ;display numbers
-call refresh
+win: ;display numbers for short time, then show lines like at start, increment points
+mov R0,#0fh
 inc R1
-cjne R1,#0ah, bridge
-call convertpoints
+loop2:
+call refresh
+djnz R0,loop2
+cjne R1,#0ah, bridgeToStart
 
-maxPoints:
+maxPoints: ;if ten points are reached, a dot is displayed and the game ends
 mov P1, #01111111b
 call refresh
 jmp maxpoints
 
-nowin: ;display numbers for short time, then show lines like at start
+nowin: ;display numbers for short time, then show lines like at start, decrement points
 mov R0,#0fh
 dec R1
 call convertpoints
@@ -107,7 +109,7 @@ pop a
 loop1:
 call refresh
 djnz R0,loop1
-bridge:
+bridgeToStart:
 jmp start
  
 
@@ -131,7 +133,7 @@ clr P2.3
 setb P2.3
 ret
 
-ende:
+ende:;is called when no points are left
 mov P3, #10111111b ;display line on display
 clr P2.0
 clr P2.1
@@ -152,7 +154,7 @@ mov p3,a
 pop a
 ret
 
-convertPoints:;write number to display to p3
+convertPoints:;write number to display to p1
 mov DPTR, #table
 push a ;save akku to stack
 mov a,R1
