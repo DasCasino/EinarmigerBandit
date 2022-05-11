@@ -1,7 +1,10 @@
 CSEG At 0H
 ;main loop, detects is bit P0.0 is set
+
+mov R1, #09h
 Start:
 setb P0.0
+call convertpoints
 MAINLOOP: 
 jnb P0.0, displayNum
 mov P3, #10111111b ;display line on display
@@ -23,7 +26,7 @@ displayNum:
 mov R3, #03h
 loop:
 push A
-mov b, #04h
+mov b, #02h
 div ab
 mov a,b
 inc a
@@ -84,15 +87,29 @@ cjne A,B,nowin
 
 win: ;display numbers
 call refresh
-jmp win
+inc R1
+cjne R1,#0ah, bridge
+call convertpoints
+
+maxPoints:
+mov P1, #01111111b
+call refresh
+jmp maxpoints
 
 nowin: ;display numbers for short time, then show lines like at start
 mov R0,#0fh
+dec R1
+call convertpoints
+push a
+mov a,r1
+jz ende
+pop a
 loop1:
 call refresh
 djnz R0,loop1
+bridge:
 jmp start
-
+ 
 
 
 ;refreshes the display so numbers dont disappear, using display codes stored in register
@@ -114,14 +131,33 @@ clr P2.3
 setb P2.3
 ret
 
-;TODO gewinn irgendwie schön anzeigen
-;Bei sehr viel Langeweile: Punktesystem einfügen :)
+ende:
+mov P3, #10111111b ;display line on display
+clr P2.0
+clr P2.1
+clr P2.2
+clr P2.3
+setb P2.0
+setb P2.1
+setb P2.2
+setb P2.3
+jmp ende
+
 ;timer für displaysteuerung wie be Eieruhr
 convert:;write number to display to p3
 mov DPTR, #table
 push a ;save akku to stack
 movc a,@a+dptr
 mov p3,a
+pop a
+ret
+
+convertPoints:;write number to display to p3
+mov DPTR, #table
+push a ;save akku to stack
+mov a,R1
+movc a,@a+dptr
+mov p1,a
 pop a
 ret
 ;;Ab hier kommt der zufallsgenerator
